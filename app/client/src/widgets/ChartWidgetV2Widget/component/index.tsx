@@ -19,6 +19,7 @@ const CanvasContainer = styled.div<ChartWidgetV2ComponentProps>`
 }`;
 
 function ChartWidgetV2Component(props: ChartWidgetV2ComponentProps) {
+  console.log("***", "getting props, are they equal ? ", props)
   const chartContainerId = props.widgetId + "chart-container";
   // console.log("***", "function is loading again");
   const [chartInstance, setChartInstance] = useState<echarts.ECharts>();
@@ -88,17 +89,17 @@ function ChartWidgetV2Component(props: ChartWidgetV2ComponentProps) {
 
     // console.log("***", "going to set options ", options);
     
-    // try {
-      chartInstance?.setOption(options, true);
-    // } catch (error : any) {
-    //   console.log("***", "exception in charts data")
-    //   console.log("***", "error in echarts configuration ", error)
+    try {
+      // chartInstance?.setOption(options, true);
+    } catch (error : any) {
+      console.log("***", "exception in charts data")
+      console.log("***", "error in echarts configuration ", error)
       
     //   // setChartError(error)
     //   // chartError = error
     //   alert(`Hey error ${error}`)
     //   // setNeedsChartReset(!needsChartReset)
-    // }
+    }
     console.log("***", "after catch");  
   });
 

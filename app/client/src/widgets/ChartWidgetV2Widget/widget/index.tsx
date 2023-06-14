@@ -82,6 +82,7 @@ class ChartWidgetV2Widget extends BaseWidget<
   };
 
   getPageView() {
+    console.log("***", "receiving props in widget ", this.props)
     return (
       <ChartWidgetV2Component
         {...this.props}
