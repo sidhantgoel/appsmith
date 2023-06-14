@@ -96,7 +96,7 @@ import type {
   WidgetEntityConfig,
 } from "entities/DataTree/dataTreeFactory";
 
-import { lintWorker } from "./LintingSagas";
+import { initiateLinting, lintWorker } from "./LintingSagas";
 import type {
   EvalTreeRequestData,
   EvalTreeResponseData,
@@ -239,7 +239,6 @@ export function* updateDataTreeHandler(
 export function* evaluateTreeSaga(
   postEvalActions?: Array<AnyReduxAction>,
   shouldReplay = true,
-  requiresLinting = false,
   forceEvaluation = false,
   requiresLogging = false,
 ) {
@@ -257,8 +256,6 @@ export function* evaluateTreeSaga(
     getSelectedAppTheme,
   );
   const appMode: ReturnType<typeof getAppMode> = yield select(getAppMode);
-
-  const isEditMode = appMode === APP_MODE.EDIT;
   const toPrintConfigTree = unEvalAndConfigTree.configTree;
   log.debug({ unevalTree, configTree: toPrintConfigTree });
   PerformanceTracker.startAsyncTracking(
@@ -272,7 +269,6 @@ export function* evaluateTreeSaga(
     theme,
     shouldReplay,
     allActionValidationConfig,
-    requiresLinting: isEditMode && requiresLinting,
     forceEvaluation,
     metaWidgets,
     appMode,
@@ -547,7 +543,8 @@ function* evaluationChangeListenerSaga(): any {
     type: ReduxActionType;
     postEvalActions: Array<ReduxAction<unknown>>;
   } = yield take(FIRST_EVAL_REDUX_ACTIONS);
-  yield fork(evaluateTreeSaga, initAction.postEvalActions, false, true, false);
+  yield fork(evaluateTreeSaga, initAction.postEvalActions, false, false);
+  yield fork(initiateLinting, true);
   const evtActionChannel: ActionPattern<Action<any>> = yield actionChannel(
     EVALUATE_REDUX_ACTIONS,
     evalQueueBuffer(),
@@ -559,15 +556,16 @@ function* evaluationChangeListenerSaga(): any {
 
     if (shouldProcessBatchedAction(action)) {
       const postEvalActions = getPostEvalActions(action);
-
-      yield call(
-        evaluateTreeSaga,
-        postEvalActions,
-        get(action, "payload.shouldReplay"),
-        shouldLint(action),
-        false,
-        shouldLog(action),
-      );
+      yield all([
+        call(initiateLinting, shouldLint(action)),
+        call(
+          evaluateTreeSaga,
+          postEvalActions,
+          get(action, "payload.shouldReplay"),
+          false,
+          shouldLog(action),
+        ),
+      ]);
     }
   }
 }
