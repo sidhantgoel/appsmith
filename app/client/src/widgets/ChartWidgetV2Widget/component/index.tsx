@@ -4,6 +4,8 @@ import { Colors } from "constants/Colors";
 import styled from "styled-components";
 import type { ChartType, ChartSelectedDataPoint } from "../constants";
 import type { WidgetPositionProps } from "widgets/BaseWidget";
+import { error } from "console";
+import { reset } from "redux-form";
 
 const CanvasContainer = styled.div<ChartWidgetV2ComponentProps>`
   border-radius: ${({ borderRadius }) => borderRadius};
@@ -18,13 +20,16 @@ const CanvasContainer = styled.div<ChartWidgetV2ComponentProps>`
 
 function ChartWidgetV2Component(props: ChartWidgetV2ComponentProps) {
   const chartContainerId = props.widgetId + "chart-container";
-  console.log("***", "function is loading again");
+  // console.log("***", "function is loading again");
   const [chartInstance, setChartInstance] = useState<echarts.ECharts>();
+  const [needsChartReset, setNeedsChartReset] = useState(false)
+  // let dom : any = ""
+  // const [chartError, setChartError] = useState<Error>();
 
   useEffect(() => {
     const chartContainerElement = document.getElementById(chartContainerId);
-    console.log("***", "chart container id is ", chartContainerId);
-    console.log("***", "chart container element is ", chartContainerElement);
+    // console.log("***", "chart container id is ", chartContainerId);
+    // console.log("***", "chart container element is ", chartContainerElement);
 
     if (!chartContainerElement) {
       throw "Unable to find chart container dom element";
@@ -32,7 +37,7 @@ function ChartWidgetV2Component(props: ChartWidgetV2ComponentProps) {
 
     const chart = echarts.init(chartContainerElement);
     chart.on("click", function (params) {
-      console.log("***", "chart point clicked with params ", params);
+      // console.log("***", "chart point clicked with params ", params);
       // console.log(params)
       if (props.onDataPointClick) {
         props.onDataPointClick({
@@ -56,40 +61,57 @@ function ChartWidgetV2Component(props: ChartWidgetV2ComponentProps) {
     return function cleanup() {
       chart.dispose();
     };
-  }, []);
+  }, [needsChartReset]);
 
   useEffect(() => {
-    console.log(
-      "***",
-      "props on data point click changed",
-      Boolean(props.onDataPointClick),
-      props.onDataPointClick,
-    );
+    // console.log(
+    //   "***",
+    //   "props on data point click changed",
+    //   Boolean(props.onDataPointClick),
+    //   props.onDataPointClick,
+    // );
   }, [props.onDataPointClick]);
 
   useEffect(() => {
-    console.log("****", "props have changed ", props);
+    // console.log("****", "props have changed ", props);
     let options: echarts.EChartsCoreOption = {};
     if (props.chartType === "CUSTOM_ECHARTS_CHART") {
       options = { ...props.customChartData };
-      console.log("***", "setting custom chart data");
+      // console.log("***", "setting custom chart data");
     } else {
       options = {
         ...props.chartConfig,
         dataset: props.chartData,
       };
-      console.log("***", "setting normal chart data");
+      // console.log("***", "setting normal chart data");
     }
 
-    console.log("***", "going to set options ", options);
-    chartInstance?.setOption(options, true);
+    // console.log("***", "going to set options ", options);
+    
+    // try {
+      chartInstance?.setOption(options, true);
+    // } catch (error : any) {
+    //   console.log("***", "exception in charts data")
+    //   console.log("***", "error in echarts configuration ", error)
+      
+    //   // setChartError(error)
+    //   // chartError = error
+    //   alert(`Hey error ${error}`)
+    //   // setNeedsChartReset(!needsChartReset)
+    // }
+    console.log("***", "after catch");  
   });
 
   useEffect(() => {
     chartInstance?.resize();
   }, [props.leftColumn, props.rightColumn, props.bottomRow, props.topRow]);
 
-  return <CanvasContainer id={chartContainerId} {...props} />;
+  return (
+  <div style={{width: "100%", height:"100%"}}>
+    <CanvasContainer id={chartContainerId} {...props}></CanvasContainer>
+    {/* { chartError ? <p>chart error is {chartError}</p> : <p>no chart error</p> } */}
+  </div>
+  );
 }
 
 export interface ChartWidgetV2ComponentProps extends WidgetPositionProps {
