@@ -361,6 +361,7 @@ export function getExpectedType(config?: ValidationConfig): string | undefined {
       return validationType;
     case ValidationTypes.OBJECT:
       let objectType = "Object";
+      // console.log("***", "calling this validation 2 ", config.params);
       if (config.params?.allowedKeys) {
         objectType = "{";
         config.params?.allowedKeys.forEach((allowedKeyConfig) => {
@@ -755,12 +756,14 @@ export const VALIDATORS: Record<ValidationTypes, Validator> = {
     props: Record<string, unknown>,
     propertyPath: string,
   ): ValidationResponse => {
+    // console.log("***", "calling this validation 1")
     if (
       value === undefined ||
       value === null ||
       (isString(value) && value.trim().length === 0)
     ) {
       if (config.params && config.params.required) {
+        console.log("***", "going in if")
         return {
           isValid: false,
           parsed: config.params?.default || {},
@@ -774,6 +777,7 @@ export const VALIDATORS: Record<ValidationTypes, Validator> = {
           ],
         };
       }
+      console.log("***", "return default or value", config.params?.default, value)
       return {
         isValid: true,
         parsed: config.params?.default || value,

@@ -75,6 +75,25 @@ export const propertyPaneConfig = [
         },
       },
       {
+        helpText: "Changes the visualisation of the chart data",
+        propertyName: "simulateCrash",
+        label: "Simulate Crash",
+        controlType: "DROP_DOWN",
+        options: [
+          {
+            label: "YES",
+            value: "YES",
+          },
+          {
+            label: "NO",
+            value: "NO",
+          }
+        ],
+        isJSConvertible: true,
+        isBindProperty: true,
+        isTriggerProperty: false
+      },
+      {
         helpText: "Populates the chart with the data",
         propertyName: "chartData",
         placeholderText: "Dataset for the chart",

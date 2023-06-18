@@ -33,6 +33,7 @@ export const CONFIG = {
     customChartData: DefaultChartConfigs["CUSTOM_ECHARTS_CHART"],
     responsiveBehavior: ResponsiveBehavior.Fill,
     minWidth: FILL_WIDGET_MIN_WIDTH,
+    simulateCrash: "NO"
   },
   properties: {
     derived: Widget.getDerivedPropertiesMap(),

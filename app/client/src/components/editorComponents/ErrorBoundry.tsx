@@ -38,7 +38,7 @@ class ErrorBoundary extends React.Component<Props, State> {
       <ErrorBoundaryContainer className="error-boundary">
         {this.state.hasError ? (
           <p>
-            Oops, Something went wrong.
+            Oops, Something went wrong 123.
             <br />
             <RetryLink onClick={() => this.setState({ hasError: false })}>
               Click here to retry
